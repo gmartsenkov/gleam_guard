@@ -3,6 +3,8 @@
 [![Package Version](https://img.shields.io/hexpm/v/okay)](https://hex.pm/packages/okay)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/okay/)
 
+`Okay` is a simple validation library, it provides a convenient to API to run validation checks at runtime.
+
 ```sh
 gleam add okay@1
 ```

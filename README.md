@@ -27,9 +27,9 @@ pub fn main() {
     |> okay.field("name", okay.is_longer(user.name, 5))
     |> okay.run()
 
-  let assert [first, second] = validator.errors
-  io.debug(first) // ValidationError("age", IsGreater(value: 20, expected: 30))
-  io.debug(second) // ValidationError("name", IsLonger(value: "John", actual: 4, expected: 5))
+  let assert [first, second] = validator.failures
+  io.debug(first) // ValidationError("age", IsGreaterFailure(value: 20, expected: 30))
+  io.debug(second) // ValidationError("name", IsLongerFailure(value: "John", actual: 4, expected: 5))
 }
 ```
 

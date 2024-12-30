@@ -9,8 +9,27 @@ gleam add guard@1
 ```gleam
 import guard
 
+pub type User {
+  User(id: Int, name: String, age: Int)
+}
+
 pub fn main() {
-  // TODO: An example of the project in use
+  let user = User(id: 1, name: "John", age: 20)
+
+  let assert Ok(_) = guard.new()
+  |> guard.field("age", guard.is_gt(user.age, 18))
+  |> guard.field("name", guard.is_longer(user.name, 1))
+  |> guard.run()
+
+  let assert Error(validator) =
+    guard.new()
+    |> guard.field("age", guard.is_gt(user.age, 30))
+    |> guard.field("name", guard.is_longer(user.name, 5))
+    |> guard.run()
+
+  let assert [first, second] = validator.errors
+  io.debug(first) // ValidationError("age", IsGreater(value: 20, expected: 30))
+  io.debug(second) // ValidationError("name", IsLonger(value: "John", actual: 4, expected: 5))
 }
 ```
 

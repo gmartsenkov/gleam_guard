@@ -51,6 +51,7 @@ pub fn new() -> Okay {
 }
 
 /// Based on the validation function result, it'll append the Error to the `Okay.failures` list
+/// The `field` argument is just used as an identifier and will be paired with the error at the end
 pub fn field(okay: Okay, field: String, result: Result(Nil, Failure)) -> Okay {
   case result {
     Error(failure) -> {

@@ -34,30 +34,45 @@ pub fn is_gt_test() {
   should.be_ok(guard.is_gt(2, 1))
   should.be_error(guard.is_gt(1, 1))
   should.be_error(guard.is_gt(0, 1))
+
+  let assert Error(err) = guard.is_gt(0, 1)
+  should.equal(err, guard.IsGreater(0, 1))
 }
 
 pub fn is_gte_test() {
   should.be_ok(guard.is_gte(2, 1))
   should.be_ok(guard.is_gte(1, 1))
   should.be_error(guard.is_gte(0, 1))
+
+  let assert Error(err) = guard.is_gte(0, 1)
+  should.equal(err, guard.IsGreaterOrEqual(0, 1))
 }
 
 pub fn is_lt_test() {
   should.be_ok(guard.is_lt(1, 2))
   should.be_error(guard.is_lt(1, 1))
   should.be_error(guard.is_lt(2, 1))
+
+  let assert Error(err) = guard.is_lt(2, 1)
+  should.equal(err, guard.IsLesser(2, 1))
 }
 
 pub fn is_lte_test() {
   should.be_ok(guard.is_lte(1, 2))
   should.be_ok(guard.is_lte(1, 1))
   should.be_error(guard.is_lte(2, 1))
+
+  let assert Error(err) = guard.is_lte(2, 1)
+  should.equal(err, guard.IsLesserOrEqual(2, 1))
 }
 
 pub fn is_longer_test() {
   should.be_ok(guard.is_longer("bob", 1))
   should.be_error(guard.is_longer("bob", 3))
   should.be_error(guard.is_longer("bob", 4))
+
+  let assert Error(err) = guard.is_longer("bob", 4)
+  should.equal(err, guard.IsLonger(value: "bob", actual: 3, expected: 4))
 }
 
 pub fn is_equal_test() {

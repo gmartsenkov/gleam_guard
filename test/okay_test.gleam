@@ -1,3 +1,4 @@
+import gleam/option
 import gleeunit
 import gleeunit/should
 import okay.{ValidationError}
@@ -113,4 +114,20 @@ pub fn is_false_test() {
 
   let assert Error(err) = okay.is_false(True)
   should.equal(err, okay.IsBool(value: True, expected: False))
+}
+
+pub fn is_some_test() {
+  should.be_ok(okay.is_some(option.Some(1)))
+  should.be_error(okay.is_some(option.None))
+
+  let assert Error(err) = okay.is_some(option.None)
+  should.equal(err, okay.IsSome)
+}
+
+pub fn is_none_test() {
+  should.be_ok(okay.is_none(option.None))
+  should.be_error(okay.is_none(option.Some(1)))
+
+  let assert Error(err) = okay.is_none(option.Some(1))
+  should.equal(err, okay.IsNone("1"))
 }

@@ -1,4 +1,5 @@
 import gleam/list
+import gleam/option
 import gleam/string
 
 /// The different types of error messages, these can be used to later build human readable messages like:
@@ -12,6 +13,8 @@ pub type Error {
   IsEqual(value: String, expected: String)
   IsIncludedIn(value: String, expected: String)
   IsBool(value: Bool, expected: Bool)
+  IsSome
+  IsNone(value: String)
 }
 
 /// The `ValidationError` type consists of the field name and the error
@@ -175,5 +178,33 @@ pub fn is_false(value: Bool) -> Result(Nil, Error) {
   case value == False {
     True -> Ok(Nil)
     False -> Error(IsBool(value, False))
+  }
+}
+
+/// Checks if Option is Some
+/// # Examples
+/// ```gleam
+/// let assert Ok(_) = okay.is_some(option.Some(1))
+/// let assert Error(_error) = okay.is_some(option.None)
+/// ```
+///
+pub fn is_some(value: option.Option(t)) -> Result(Nil, Error) {
+  case value {
+    option.Some(_) -> Ok(Nil)
+    option.None -> Error(IsSome)
+  }
+}
+
+/// Checks if Option is None
+/// # Examples
+/// ```gleam
+/// let assert Ok(_) = okay.is_none(option.None)
+/// let assert Error(_error) = okay.is_noe(option.Some(1))
+/// ```
+///
+pub fn is_none(value: option.Option(t)) -> Result(Nil, Error) {
+  case value {
+    option.None -> Ok(Nil)
+    option.Some(x) -> Error(IsNone(string.inspect(x)))
   }
 }

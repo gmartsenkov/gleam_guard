@@ -19,41 +19,41 @@ pub type ValidationError {
   ValidationError(field: String, error: Error)
 }
 
-// The `Guard` type is used to store the list of validation errors
-pub type Guard {
-  Guard(errors: List(ValidationError))
+// The `Okay` type is used to store the list of validation errors
+pub type Okay {
+  Okay(errors: List(ValidationError))
 }
 
-// Checks if the `Guard` record contains any errors and responds with a Result
-pub fn run(guard: Guard) -> Result(Nil, Guard) {
-  case list.is_empty(guard.errors) {
+// Checks if the `Okay` record contains any errors and responds with a Result
+pub fn run(okay: Okay) -> Result(Nil, Okay) {
+  case list.is_empty(okay.errors) {
     True -> Ok(Nil)
-    False -> Error(guard)
+    False -> Error(okay)
   }
 }
 
-// Initializes a `Guard` record with an empty list of errors
-pub fn new() -> Guard {
-  Guard(errors: [])
+// Initializes a `Okay` record with an empty list of errors
+pub fn new() -> Okay {
+  Okay(errors: [])
 }
 
-// Based on the validation function result, it'll append the Error to the `Guard.errors` list
-pub fn field(guard: Guard, field: String, result: Result(Nil, Error)) -> Guard {
+// Based on the validation function result, it'll append the Error to the `Okay.errors` list
+pub fn field(okay: Okay, field: String, result: Result(Nil, Error)) -> Okay {
   case result {
     Error(error) -> {
       let updated_errors =
-        list.append(guard.errors, [ValidationError(field:, error:)])
+        list.append(okay.errors, [ValidationError(field:, error:)])
 
-      Guard(errors: updated_errors)
+      Okay(errors: updated_errors)
     }
-    _ -> guard
+    _ -> okay
   }
 }
 
 // Checks if values is included in the list
 // Example:
-// let assert Ok(_) = guard.is_included_in(1, [1, 2])
-// let assert Error(_error) = guard.is_included_in(3, [1, 2])
+// let assert Ok(_) = okay.is_included_in(1, [1, 2])
+// let assert Error(_error) = okay.is_included_in(3, [1, 2])
 pub fn is_included_in(value: t, whitelist: List(t)) -> Result(Nil, Error) {
   case list.contains(whitelist, value) {
     True -> Ok(Nil)
@@ -64,8 +64,8 @@ pub fn is_included_in(value: t, whitelist: List(t)) -> Result(Nil, Error) {
 
 // Checks if string is longer than X amount
 // Example:
-// let assert Ok(_) = guard.is_longer("hello", 1)
-// let assert Error(_error) = guard.is_longer("A", 2)
+// let assert Ok(_) = okay.is_longer("hello", 1)
+// let assert Error(_error) = okay.is_longer("A", 2)
 pub fn is_longer(value: String, length: Int) -> Result(Nil, Error) {
   let value_length = string.length(value)
   case value_length > length {
@@ -76,8 +76,8 @@ pub fn is_longer(value: String, length: Int) -> Result(Nil, Error) {
 
 // Checks if two values are equal to each other
 // Example:
-// let assert Ok(_) = guard.is_equal("hi", "hi")
-// let assert Error(_error) = guard.is_equal(1, 2)
+// let assert Ok(_) = okay.is_equal("hi", "hi")
+// let assert Error(_error) = okay.is_equal(1, 2)
 pub fn is_equal(value: t, compare: t) -> Result(Nil, Error) {
   case value == compare {
     True -> Ok(Nil)
@@ -87,8 +87,8 @@ pub fn is_equal(value: t, compare: t) -> Result(Nil, Error) {
 
 // Checks if one Int is greater than another
 // Example:
-// let assert Ok(_) = guard.is_gt(10, 1)
-// let assert Error(_error) = guard.is_gt(1, 10)
+// let assert Ok(_) = okay.is_gt(10, 1)
+// let assert Error(_error) = okay.is_gt(1, 10)
 pub fn is_gt(value: Int, compare: Int) -> Result(Nil, Error) {
   case value > compare {
     True -> Ok(Nil)
@@ -98,8 +98,8 @@ pub fn is_gt(value: Int, compare: Int) -> Result(Nil, Error) {
 
 // Checks if one Int is greater than or equal to another
 // Example:
-// let assert Ok(_) = guard.is_gte(10, 10)
-// let assert Error(_error) = guard.is_gte(9, 10)
+// let assert Ok(_) = okay.is_gte(10, 10)
+// let assert Error(_error) = okay.is_gte(9, 10)
 pub fn is_gte(value: Int, compare: Int) -> Result(Nil, Error) {
   case value >= compare {
     True -> Ok(Nil)
@@ -109,8 +109,8 @@ pub fn is_gte(value: Int, compare: Int) -> Result(Nil, Error) {
 
 // Checks if one Int is less than another
 // Example:
-// let assert Ok(_) = guard.is_lt(1, 2)
-// let assert Error(_error) = guard.is_lt(5, 1)
+// let assert Ok(_) = okay.is_lt(1, 2)
+// let assert Error(_error) = okay.is_lt(5, 1)
 pub fn is_lt(value: Int, compare: Int) -> Result(Nil, Error) {
   case value < compare {
     True -> Ok(Nil)
@@ -120,8 +120,8 @@ pub fn is_lt(value: Int, compare: Int) -> Result(Nil, Error) {
 
 // Checks if one Int is less than or equal to another
 // Example:
-// let assert Ok(_) = guard.is_lte(8, 8)
-// let assert Error(_error) = guard.is_lte(9, 8)
+// let assert Ok(_) = okay.is_lte(8, 8)
+// let assert Error(_error) = okay.is_lte(9, 8)
 pub fn is_lte(value: Int, compare: Int) -> Result(Nil, Error) {
   case value <= compare {
     True -> Ok(Nil)
@@ -131,8 +131,8 @@ pub fn is_lte(value: Int, compare: Int) -> Result(Nil, Error) {
 
 // Checks if bool is True
 // Example:
-// let assert Ok(_) = guard.is_true(True)
-// let assert Error(_error) = guard.is_true(False)
+// let assert Ok(_) = okay.is_true(True)
+// let assert Error(_error) = okay.is_true(False)
 pub fn is_true(value: Bool) -> Result(Nil, Error) {
   case value == True {
     True -> Ok(Nil)
@@ -142,8 +142,8 @@ pub fn is_true(value: Bool) -> Result(Nil, Error) {
 
 // Checks if bool is False
 // Example:
-// let assert Ok(_) = guard.is_false(False)
-// let assert Error(_error) = guard.is_false(True)
+// let assert Ok(_) = okay.is_false(False)
+// let assert Error(_error) = okay.is_false(True)
 pub fn is_false(value: Bool) -> Result(Nil, Error) {
   case value == False {
     True -> Ok(Nil)

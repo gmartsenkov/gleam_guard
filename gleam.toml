@@ -1,8 +1,8 @@
-name = "gleam_guard"
+name = "okay"
 version = "1.0.0"
 description = "Data validation library for Gleam"
 licences = ["Apache-2.0"]
-repository = { type = "github", user = "gmartsenkov", repo = "gleam_guard" }
+repository = { type = "github", user = "gmartsenkov", repo = "okay" }
 
 [dependencies]
 gleam_stdlib = ">= 0.34.0 and < 2.0.0"

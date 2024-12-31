@@ -2,6 +2,10 @@ import gleam/list
 import gleam/option
 import gleam/string
 
+/// Alias to `Result(Nil, Failure)` for convenience
+pub type ValidationResult =
+  Result(Nil, Failure)
+
 /// The different types of failure messages, these can be used to later build human readable messages like:
 /// `The string "John" expected to be longer then 10 characters but was actually 4`
 pub type Failure {
@@ -25,6 +29,8 @@ pub type Failure {
   IsSomeFailure
   /// Returned when is_none failed
   IsNoneFailure(value: String)
+  // Type used to contain custom failures
+  CustomFailure(message: String)
 }
 
 /// The `ValidationError` type consists of the field name and the error
@@ -52,7 +58,7 @@ pub fn new() -> Okay {
 
 /// Based on the validation function result, it'll append the Error to the `Okay.failures` list
 /// The `field` argument is just used as an identifier and will be paired with the error at the end
-pub fn field(okay: Okay, field: String, result: Result(Nil, Failure)) -> Okay {
+pub fn field(okay: Okay, field: String, result: ValidationResult) -> Okay {
   case result {
     Error(failure) -> {
       let updated_failures =
@@ -71,7 +77,7 @@ pub fn field(okay: Okay, field: String, result: Result(Nil, Failure)) -> Okay {
 /// let assert Error(_error) = okay.is_included_in(3, [1, 2])
 /// ```
 ///
-pub fn is_included_in(value: t, whitelist: List(t)) -> Result(Nil, Failure) {
+pub fn is_included_in(value: t, whitelist: List(t)) -> ValidationResult {
   case list.contains(whitelist, value) {
     True -> Ok(Nil)
     False ->
@@ -89,7 +95,7 @@ pub fn is_included_in(value: t, whitelist: List(t)) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_longer("A", 2)
 /// ```
 ///
-pub fn is_longer(value: String, length: Int) -> Result(Nil, Failure) {
+pub fn is_longer(value: String, length: Int) -> ValidationResult {
   let value_length = string.length(value)
   case value_length > length {
     True -> Ok(Nil)
@@ -104,7 +110,7 @@ pub fn is_longer(value: String, length: Int) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_equal(1, 2)
 /// ```
 ///
-pub fn is_equal(value: t, compare: t) -> Result(Nil, Failure) {
+pub fn is_equal(value: t, compare: t) -> ValidationResult {
   case value == compare {
     True -> Ok(Nil)
     False ->
@@ -119,7 +125,7 @@ pub fn is_equal(value: t, compare: t) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_gt(1, 10)
 /// ```
 ///
-pub fn is_gt(value: Int, compare: Int) -> Result(Nil, Failure) {
+pub fn is_gt(value: Int, compare: Int) -> ValidationResult {
   case value > compare {
     True -> Ok(Nil)
     False -> Error(IsGreaterFailure(value, compare))
@@ -133,7 +139,7 @@ pub fn is_gt(value: Int, compare: Int) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_gte(9, 10)
 /// ```
 ///
-pub fn is_gte(value: Int, compare: Int) -> Result(Nil, Failure) {
+pub fn is_gte(value: Int, compare: Int) -> ValidationResult {
   case value >= compare {
     True -> Ok(Nil)
     False -> Error(IsGreaterOrEqualFailure(value, compare))
@@ -147,7 +153,7 @@ pub fn is_gte(value: Int, compare: Int) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_lt(5, 1)
 /// ```
 ///
-pub fn is_lt(value: Int, compare: Int) -> Result(Nil, Failure) {
+pub fn is_lt(value: Int, compare: Int) -> ValidationResult {
   case value < compare {
     True -> Ok(Nil)
     False -> Error(IsLesserFailure(value, compare))
@@ -161,7 +167,7 @@ pub fn is_lt(value: Int, compare: Int) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_lte(9, 8)
 /// ```
 ///
-pub fn is_lte(value: Int, compare: Int) -> Result(Nil, Failure) {
+pub fn is_lte(value: Int, compare: Int) -> ValidationResult {
   case value <= compare {
     True -> Ok(Nil)
     False -> Error(IsLesserOrEqualFailure(value, compare))
@@ -175,7 +181,7 @@ pub fn is_lte(value: Int, compare: Int) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_true(False)
 /// ```
 ///
-pub fn is_true(value: Bool) -> Result(Nil, Failure) {
+pub fn is_true(value: Bool) -> ValidationResult {
   case value == True {
     True -> Ok(Nil)
     False -> Error(IsBoolFailure(value, True))
@@ -189,7 +195,7 @@ pub fn is_true(value: Bool) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_false(True)
 /// ```
 ///
-pub fn is_false(value: Bool) -> Result(Nil, Failure) {
+pub fn is_false(value: Bool) -> ValidationResult {
   case value == False {
     True -> Ok(Nil)
     False -> Error(IsBoolFailure(value, False))
@@ -203,7 +209,7 @@ pub fn is_false(value: Bool) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_some(option.None)
 /// ```
 ///
-pub fn is_some(value: option.Option(t)) -> Result(Nil, Failure) {
+pub fn is_some(value: option.Option(t)) -> ValidationResult {
   case value {
     option.Some(_) -> Ok(Nil)
     option.None -> Error(IsSomeFailure)
@@ -217,7 +223,7 @@ pub fn is_some(value: option.Option(t)) -> Result(Nil, Failure) {
 /// let assert Error(_error) = okay.is_noe(option.Some(1))
 /// ```
 ///
-pub fn is_none(value: option.Option(t)) -> Result(Nil, Failure) {
+pub fn is_none(value: option.Option(t)) -> ValidationResult {
   case value {
     option.None -> Ok(Nil)
     option.Some(x) -> Error(IsNoneFailure(string.inspect(x)))

@@ -35,6 +35,39 @@ pub fn main() {
 }
 ```
 
+It's also possible to define custom validation functions:
+
+``` gleam
+import okay
+
+pub type User {
+  User(name: String, is_admin: True)
+}
+
+fn is_admin(user: User) -> okay.ValidationResult {
+  case user.is_admin {
+    True -> Ok(Nil)
+    False -> Error(okay.CustomFailure("Expected user to be admin"))
+  }
+}
+
+pub fn main() {
+  let user = User(name: "John", is_admin: 20)
+
+  let assert Ok(_) = okay.new()
+  |> okay.field("is_admin", is_admin(user))
+  |> okay.run()
+
+  let assert Error(validator) =
+    okay.new()
+    |> okay.field("is_admin", is_admin(user))
+    |> okay.run()
+
+  let assert [first] = validator.failures
+  io.debug(first) // ValidationError("is_admin", CustomFailure("Expected user to be admin"))
+}
+```
+
 Further documentation can be found at <https://hexdocs.pm/okay>.
 
 ## Development

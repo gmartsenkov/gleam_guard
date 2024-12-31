@@ -7,12 +7,12 @@ pub fn main() {
   gleeunit.main()
 }
 
-pub type TestEntities {
-  User(id: Int, name: String, age: Int)
+pub type User {
+  User(id: Int, name: String, age: Int, is_admin: Bool)
 }
 
 pub fn run_test() {
-  let user = User(id: 1, name: "John", age: 20)
+  let user = User(id: 1, name: "John", age: 20, is_admin: True)
 
   okay.new()
   |> okay.field("age", okay.is_gt(user.age, 18))
@@ -31,6 +31,35 @@ pub fn run_test() {
   should.equal(
     second,
     ValidationError("name", okay.IsLongerFailure("John", 4, 5)),
+  )
+}
+
+pub fn custom_failure_test() {
+  let is_admin = fn(user: User) -> okay.ValidationResult {
+    case user.is_admin {
+      True -> Ok(Nil)
+      False -> Error(okay.CustomFailure("Expected user to be admin"))
+    }
+  }
+
+  let user = User(id: 1, name: "John", age: 20, is_admin: True)
+
+  okay.new()
+  |> okay.field("is_admin", is_admin(user))
+  |> okay.run()
+  |> should.be_ok
+
+  let user = User(id: 1, name: "John", age: 20, is_admin: False)
+
+  let assert Error(validator) =
+    okay.new()
+    |> okay.field("is_admin", is_admin(user))
+    |> okay.run()
+
+  let assert [first] = validator.failures
+  should.equal(
+    first,
+    ValidationError("is_admin", okay.CustomFailure("Expected user to be admin")),
   )
 }
 

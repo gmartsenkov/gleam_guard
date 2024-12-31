@@ -18,10 +18,11 @@ pub type User {
 pub fn main() {
   let user = User(id: 1, name: "John", age: 20)
 
-  let assert Ok(_) = okay.new()
-  |> okay.field("age", okay.is_gt(user.age, 18))
-  |> okay.field("name", okay.is_longer(user.name, 1))
-  |> okay.run()
+  let assert Ok(_) = 
+    okay.new()
+    |> okay.field("age", okay.is_gt(user.age, 18))
+    |> okay.field("name", okay.is_longer(user.name, 1))
+    |> okay.run()
 
   let assert Error(validator) =
     okay.new()

@@ -42,7 +42,7 @@ It's also possible to define custom validation functions:
 import okay
 
 pub type User {
-  User(name: String, is_admin: True)
+  User(name: String, is_admin: Bool)
 }
 
 fn is_admin(user: User) -> okay.ValidationResult {
